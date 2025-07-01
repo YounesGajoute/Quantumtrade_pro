@@ -1,6 +1,11 @@
-"use server"
-
-import { binanceAPI } from "./binance-api"
+import { 
+  get24hrTicker, 
+  getKlines, 
+  getAccountInfo, 
+  placeOrder, 
+  getPositions, 
+  closePosition 
+} from "./binance-api"
 import { TechnicalIndicators, type OHLCV } from "./technical-indicators"
 import { createClient } from "@supabase/supabase-js"
 
@@ -94,13 +99,13 @@ class TradingBot {
   }
 
   private async scanMarkets() {
-    const marketData = await binanceAPI.get24hrTicker()
+    const marketData = await get24hrTicker()
     const filteredSymbols = marketData
       .filter(
-        (ticker) =>
+        (ticker: any) =>
           this.config.symbols.includes(ticker.symbol) && Number.parseFloat(ticker.volume) > this.config.minVolume,
       )
-      .map((ticker) => ticker.symbol)
+      .map((ticker: any) => ticker.symbol)
 
     for (const symbol of filteredSymbols) {
       if (this.positions.size >= this.config.maxPositions) break
@@ -117,8 +122,8 @@ class TradingBot {
   private async generateSignal(symbol: string): Promise<TradingSignal> {
     try {
       // Get 1-hour klines for analysis
-      const klines = await binanceAPI.getKlines(symbol, "1h", 100)
-      const ohlcv: OHLCV[] = klines.map((k) => ({
+      const klines = await getKlines(symbol, "1h", 100)
+      const ohlcv: OHLCV[] = klines.map((k: any) => ({
         open: Number.parseFloat(k.open),
         high: Number.parseFloat(k.high),
         low: Number.parseFloat(k.low),
@@ -198,7 +203,7 @@ class TradingBot {
 
   private async executeSignal(signal: TradingSignal) {
     try {
-      const accountInfo = await binanceAPI.getAccountInfo()
+      const accountInfo = await getAccountInfo()
       const availableBalance = Number.parseFloat(accountInfo.availableBalance)
 
       // Calculate position size
@@ -206,9 +211,9 @@ class TradingBot {
       const positionSize = (riskAmount * this.config.leverage).toFixed(6)
 
       // Place order
-      const order = await binanceAPI.placeOrder({
+      const order = await placeOrder({
         symbol: signal.symbol,
-        side: signal.action,
+        side: signal.action as "BUY" | "SELL",
         type: "MARKET",
         quantity: positionSize,
       })
@@ -240,7 +245,7 @@ class TradingBot {
   }
 
   private async managePositions() {
-    const currentPositions = await binanceAPI.getPositions()
+    const currentPositions = await getPositions()
 
     for (const [symbol, position] of this.positions) {
       const currentPosition = currentPositions.find((p: any) => p.symbol === symbol)
@@ -267,7 +272,7 @@ class TradingBot {
 
   private async closePosition(symbol: string, reason: string) {
     try {
-      await binanceAPI.closePosition(symbol)
+      await closePosition(symbol)
       this.positions.delete(symbol)
 
       await this.logActivity("POSITION_CLOSED", `Closed position for ${symbol} - Reason: ${reason}`)
@@ -332,4 +337,38 @@ class TradingBot {
   }
 }
 
-export const tradingBot = new TradingBot()
+// Singleton instance
+let tradingBotInstance: TradingBot | null = null
+
+// Async functions to manage the trading bot
+export async function getTradingBot(): Promise<TradingBot> {
+  if (!tradingBotInstance) {
+    tradingBotInstance = new TradingBot()
+  }
+  return tradingBotInstance
+}
+
+export async function startTradingBot(): Promise<void> {
+  const bot = await getTradingBot()
+  await bot.start()
+}
+
+export async function stopTradingBot(): Promise<void> {
+  const bot = await getTradingBot()
+  await bot.stop()
+}
+
+export async function getTradingBotStatus(): Promise<any> {
+  const bot = await getTradingBot()
+  return await bot.getStatus()
+}
+
+export async function updateTradingBotConfig(newConfig: Partial<TradingConfig>): Promise<void> {
+  const bot = await getTradingBot()
+  await bot.updateConfig(newConfig)
+}
+
+export async function emergencyStopTradingBot(): Promise<void> {
+  const bot = await getTradingBot()
+  await bot.emergencyStop()
+}
