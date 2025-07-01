@@ -1,0 +1,227 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "QuantumTrade Enterprise Dashboard",
+    "tags": ["trading", "enterprise", "microservices"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "quantumtrade_system_health",
+            "legendFormat": "System Health"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Data Orchestrator Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(quantumtrade_data_orchestrator_processing_time_total[5m])",
+            "legendFormat": "Processing Time"
+          },
+          {
+            "expr": "quantumtrade_data_orchestrator_cache_hit_rate",
+            "legendFormat": "Cache Hit Rate"
+          },
+          {
+            "expr": "quantumtrade_data_orchestrator_api_efficiency",
+            "legendFormat": "API Efficiency"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Market Regime Analysis",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "quantumtrade_market_regime_confidence",
+            "legendFormat": "Regime Confidence"
+          },
+          {
+            "expr": "quantumtrade_market_regime_stability",
+            "legendFormat": "Regime Stability"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 1
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Order Router Metrics",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "quantumtrade_order_router_latency_seconds",
+            "legendFormat": "Order Latency"
+          },
+          {
+            "expr": "quantumtrade_order_router_slippage_percent",
+            "legendFormat": "Slippage %"
+          },
+          {
+            "expr": "quantumtrade_order_router_fill_quality",
+            "legendFormat": "Fill Quality"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Event Bus Activity",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(quantumtrade_event_bus_events_total[5m])",
+            "legendFormat": "Events/sec"
+          },
+          {
+            "expr": "quantumtrade_event_bus_active_listeners",
+            "legendFormat": "Active Listeners"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Error Rates",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(quantumtrade_errors_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Circuit Breaker Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "quantumtrade_circuit_breaker_status",
+            "legendFormat": "Circuit Breaker"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 2}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 8,
+        "title": "Resource Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m]) * 100",
+            "legendFormat": "CPU Usage %"
+          },
+          {
+            "expr": "process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Memory Usage MB"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 9,
+        "title": "Trading Performance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "quantumtrade_trading_pnl_total",
+            "legendFormat": "Total P&L"
+          },
+          {
+            "expr": "quantumtrade_trading_win_rate",
+            "legendFormat": "Win Rate %"
+          },
+          {
+            "expr": "quantumtrade_trading_sharpe_ratio",
+            "legendFormat": "Sharpe Ratio"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32}
+      },
+      {
+        "id": 10,
+        "title": "Market Data Quality",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "quantumtrade_market_data_quality_score",
+            "legendFormat": "Data Quality"
+          },
+          {
+            "expr": "quantumtrade_market_data_freshness_seconds",
+            "legendFormat": "Data Freshness (s)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1,
+    "links": [],
+    "gnetId": null,
+    "graphTooltip": 0,
+    "annotations": {
+      "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "liveNow": false,
+    "hideControls": false
+  }
+} 
