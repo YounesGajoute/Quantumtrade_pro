@@ -14,38 +14,47 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const menuItems = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    isActive: true,
+    href: "/",
   },
   {
     title: "Trading Bot",
     icon: Bot,
+    href: "/trading-bot",
     badge: "ACTIVE",
   },
   {
     title: "Signals",
     icon: TrendingUp,
+    href: "/signals",
     badge: "12",
   },
   {
     title: "Portfolio",
     icon: Wallet,
+    href: "/portfolio",
   },
   {
     title: "Risk Management",
     icon: AlertTriangle,
+    href: "/risk-management",
   },
   {
     title: "Telegram Bot",
     icon: MessageSquare,
+    href: "/telegram-bot",
   },
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
+
   return (
     <Sidebar className="border-r border-slate-800">
       <SidebarHeader className="border-b border-slate-800 p-4">
@@ -67,18 +76,20 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    isActive={item.isActive}
-                    className="text-slate-300 hover:text-white hover:bg-slate-800"
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
-                    {item.badge && (
-                      <Badge variant={item.badge === "ACTIVE" ? "default" : "secondary"} className="ml-auto text-xs">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </SidebarMenuButton>
+                  <Link href={item.href} className="w-full">
+                    <SidebarMenuButton
+                      isActive={pathname === item.href}
+                      className="text-slate-300 hover:text-white hover:bg-slate-800 w-full"
+                    >
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.title}</span>
+                      {item.badge && (
+                        <Badge variant={item.badge === "ACTIVE" ? "default" : "secondary"} className="ml-auto text-xs">
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
