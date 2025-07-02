@@ -3,53 +3,45 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "alert_rules.yml"
-
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-          - alertmanager:9093
+  # - "first_rules.yml"
+  # - "second_rules.yml"
 
 scrape_configs:
-  # Prometheus itself
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
-  # QuantumTrade App
   - job_name: 'quantumtrade-app'
     static_configs:
-      - targets: ['quantumtrade-app:3000']
+      - targets: ['app:3000']
     metrics_path: '/api/metrics'
-    scrape_interval: 30s
-    scrape_timeout: 10s
 
-  # Data Orchestrator
-  - job_name: 'data-orchestrator'
+  - job_name: 'quantumtrade-processing-engine'
     static_configs:
-      - targets: ['data-orchestrator:3001']
+      - targets: ['processing-engine:3001']
+    metrics_path: '/metrics'
+
+  - job_name: 'quantumtrade-data-orchestrator'
+    static_configs:
+      - targets: ['data-orchestrator:3002']
     metrics_path: '/metrics'
     scrape_interval: 15s
     scrape_timeout: 10s
 
-  # Market Regime Engine
-  - job_name: 'market-regime-engine'
+  - job_name: 'quantumtrade-market-regime-engine'
     static_configs:
-      - targets: ['market-regime-engine:3002']
+      - targets: ['market-regime-engine:3003']
     metrics_path: '/metrics'
     scrape_interval: 15s
     scrape_timeout: 10s
 
-  # Order Router
-  - job_name: 'order-router'
+  - job_name: 'quantumtrade-order-router'
     static_configs:
       - targets: ['order-router:3003']
     metrics_path: '/metrics'
     scrape_interval: 15s
     scrape_timeout: 10s
 
-  # Redis
   - job_name: 'redis'
     static_configs:
       - targets: ['redis:6379']
@@ -57,7 +49,20 @@ scrape_configs:
     scrape_interval: 30s
     scrape_timeout: 10s
 
-  # PostgreSQL
+  - job_name: 'timescaledb'
+    static_configs:
+      - targets: ['timescaledb:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb:27017']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
   - job_name: 'postgres'
     static_configs:
       - targets: ['postgres:5432']
@@ -65,7 +70,6 @@ scrape_configs:
     scrape_interval: 30s
     scrape_timeout: 10s
 
-  # Node Exporter for System Metrics
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['node-exporter:9100']

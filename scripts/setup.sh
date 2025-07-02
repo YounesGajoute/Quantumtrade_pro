@@ -91,6 +91,16 @@ TELEGRAM_CHAT_ID=1751294791
 # Application Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NODE_ENV=development
+
+# Enhanced Processing Engine - Cache/DB
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
+TIMESCALE_HOST=localhost
+TIMESCALE_PORT=5432
+TIMESCALE_DB=quantumtrade
+TIMESCALE_USER=postgres
+TIMESCALE_PASSWORD=your_timescale_password
 EOF
         print_success ".env.local file created"
         print_warning "Please update .env.local with your actual API keys and configuration"
