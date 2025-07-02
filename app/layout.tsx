@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { RealTimeDataProvider } from "@/components/real-time-data-provider"
+import { EnterpriseDataProvider } from "@/components/enterprise-data-provider"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -22,10 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <RealTimeDataProvider>
+        <EnterpriseDataProvider>
           {children}
           <Toaster />
-        </RealTimeDataProvider>
+        </EnterpriseDataProvider>
       </body>
     </html>
   )

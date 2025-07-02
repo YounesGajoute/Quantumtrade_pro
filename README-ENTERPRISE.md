@@ -381,3 +381,5 @@ grep -i error logs/data-orchestrator.log
 ---
 
 **QuantumTrade Pro Enterprise** - Transforming cryptocurrency trading with institutional-grade technology. 
+
+npx jest --version 

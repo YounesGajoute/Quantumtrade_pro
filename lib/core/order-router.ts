@@ -10,6 +10,7 @@ export interface ExchangeMetrics {
   spread: number // Average bid-ask spread
   lastUpdate: number
   status: 'ONLINE' | 'DEGRADED' | 'OFFLINE'
+  successRate: number
 }
 
 export interface OrderRequest {
@@ -63,6 +64,18 @@ export interface RouterMetrics {
   lastUpdateTime: number
   errors: string[]
   exchangePerformance: Record<string, ExchangeMetrics>
+  exchanges: Record<string, ExchangeMetrics>
+  routing: {
+    totalOrders: number
+    avgLatency: number
+    successRate: number
+    lastDecision: any
+  }
+  performance: {
+    p95Latency: number
+    p99Latency: number
+    errorRate: number
+  }
 }
 
 class OrderRouter {
@@ -87,7 +100,19 @@ class OrderRouter {
     routingAccuracy: 0,
     lastUpdateTime: 0,
     errors: [],
-    exchangePerformance: {}
+    exchangePerformance: {},
+    exchanges: {},
+    routing: {
+      totalOrders: 0,
+      avgLatency: 0,
+      successRate: 0,
+      lastDecision: null
+    },
+    performance: {
+      p95Latency: 0,
+      p99Latency: 0,
+      errorRate: 0
+    }
   }
   
   private metricsTimer?: NodeJS.Timeout
@@ -118,7 +143,8 @@ class OrderRouter {
         volume: 1000000 + Math.random() * 9000000, // Simulated volume
         spread: 0.0001 + Math.random() * 0.0002, // Simulated spread
         lastUpdate: Date.now(),
-        status: 'ONLINE'
+        status: 'ONLINE',
+        successRate: 0.98
       })
     }
   }

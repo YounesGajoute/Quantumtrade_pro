@@ -1,13 +1,91 @@
-import { startDataFlow, getMarketData, getDataFlowMetrics } from '@/lib/data-service'
+import { startDataFlow, getMarketData, getDataFlowMetrics } from '@/lib/core/data-orchestrator'
 import { getAllUSDTPairs, getTopUSDTPairsByVolume, getUSDTPairsWithVolume } from '@/lib/binance-api'
+import CacheManager from '@/lib/core/cache-manager'
+import RateLimiter from '@/lib/core/rate-limiter'
+import RetentionManager from '@/lib/core/retention-manager'
+
+// Initialize enhanced components
+const cacheManager = new CacheManager({
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    password: process.env.REDIS_PASSWORD,
+    db: parseInt(process.env.REDIS_DB || '0'),
+  },
+  timescale: {
+    host: process.env.TIMESCALE_HOST || 'localhost',
+    port: parseInt(process.env.TIMESCALE_PORT || '5432'),
+    database: process.env.TIMESCALE_DB || 'quantumtrade',
+    user: process.env.TIMESCALE_USER || 'postgres',
+    password: process.env.TIMESCALE_PASSWORD || '',
+  },
+  ttl: {
+    l1: 300, // 5 minutes in Redis
+    l2: 7,   // 7 days in TimescaleDB
+  },
+})
+
+const rateLimiter = new RateLimiter({
+  maxRequestsPerMinute: 100,
+  maxRequestsPerHour: 1000,
+  maxRequestsPerDay: 10000,
+  burstLimit: 10,
+  retryAfterSeconds: 60,
+})
+
+const retentionManager = new RetentionManager({
+  dataRetentionDays: {
+    marketData: 30,
+    indicators: 90,
+    signals: 180,
+    logs: 365,
+  },
+  cleanupIntervalHours: 24, // Daily cleanup
+  batchSize: 1000,
+}, cacheManager)
 
 export async function GET(request: Request) {
   try {
+    // Rate limiting - get client identifier (IP or API key)
+    const clientId = request.headers.get('x-api-key') || 
+                    request.headers.get('x-forwarded-for') || 
+                    'anonymous'
+    
+    // Check rate limits
+    const isAllowed = await rateLimiter.checkLimit(clientId)
+    if (!isAllowed) {
+      return Response.json({
+        success: false,
+        error: 'Rate limit exceeded',
+        message: 'Too many requests. Please try again later.',
+        retryAfter: 60
+      }, { status: 429 })
+    }
+
     // Get query parameters
     const { searchParams } = new URL(request.url)
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined
     const minVolume = searchParams.get('minVolume') ? parseFloat(searchParams.get('minVolume')!) : undefined
     const useTopByVolume = searchParams.get('topByVolume') === 'true'
+    
+    // Build cache key based on request parameters
+    const cacheKey = `enhanced-market-data:${JSON.stringify({
+      limit,
+      minVolume,
+      useTopByVolume,
+      timestamp: Math.floor(Date.now() / 60000) // Cache by minute
+    })}`
+    
+    // Try to get data from cache first
+    const cachedData = await cacheManager.get(cacheKey)
+    if (cachedData) {
+      console.log('✅ Returning cached enhanced market data')
+      return Response.json({
+        ...cachedData,
+        cached: true,
+        cacheHit: true
+      })
+    }
     
     // Get available USDT pairs based on parameters
     let usdtPairs
@@ -65,7 +143,8 @@ export async function GET(request: Request) {
     // Get data flow metrics
     const metrics = getDataFlowMetrics()
     
-    return Response.json({
+    // Prepare response data
+    const responseData = {
       success: true,
       count: marketData.length,
       data: marketData.map(item => ({
@@ -100,8 +179,43 @@ export async function GET(request: Request) {
         lastUpdateTime: metrics.lastUpdateTime,
         errors: metrics.errors
       },
-      timestamp: new Date().toISOString()
-    })
+      timestamp: new Date().toISOString(),
+      cached: false,
+      cacheHit: false
+    }
+    
+    // Cache the response data
+    await cacheManager.set(cacheKey, responseData, 300) // Cache for 5 minutes
+    
+    // Get enhanced system metrics
+    const cacheStats = await cacheManager.getStats()
+    const rateLimitStats = rateLimiter.getStats()
+    const retentionStatus = retentionManager.getStatus()
+    
+    // Add enhanced metrics to response
+    const enhancedMetrics = {
+      ...responseData.metrics,
+      cache: {
+        l1Size: cacheStats.l1Size,
+        l2Size: cacheStats.l2Size,
+        l1HitRate: cacheStats.l1HitRate,
+        l2HitRate: cacheStats.l2HitRate
+      },
+      rateLimiting: {
+        activeIdentifiers: rateLimitStats.activeIdentifiers,
+        queueLength: rateLimitStats.queueLength,
+        isProcessingBurst: rateLimitStats.isProcessingBurst
+      },
+      retention: {
+        isRunning: retentionStatus.isRunning,
+        lastCleanup: retentionStatus.lastCleanup,
+        nextCleanup: retentionStatus.nextCleanup
+      }
+    }
+    
+    responseData.metrics = enhancedMetrics as any
+    
+    return Response.json(responseData)
   } catch (error) {
     console.error("Error in enhanced market data API:", error)
     

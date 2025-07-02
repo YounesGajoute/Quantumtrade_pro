@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -20,8 +21,11 @@ import {
   CheckCircle,
   XCircle,
   BarChart3,
-  Activity
+  Activity,
+  Cpu,
+  Gauge
 } from "lucide-react"
+import QuantumTechnicalIndicators from "@/components/quantum-technical-indicators"
 
 interface SignalData {
   symbol: string
@@ -227,11 +231,11 @@ export default function SignalsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-green-500" />
-            Trading Signals
+            <Zap className="w-8 h-8 text-blue-500" />
+            Trading Signals & Technical Analysis
           </h1>
           <p className="text-slate-400 mt-2">
-            Real-time signal analysis across all USDT trading pairs
+            Enterprise-grade technical analysis with quantum-powered indicators and real-time signals
           </p>
         </div>
         
@@ -241,7 +245,7 @@ export default function SignalsPage() {
           className="bg-blue-600 hover:bg-blue-700"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh Signals
+          Refresh
         </Button>
       </div>
 
@@ -254,224 +258,328 @@ export default function SignalsPage() {
         </Alert>
       )}
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Total Signals</CardTitle>
-            <BarChart3 className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <p className="text-xs text-slate-400">Active pairs</p>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="quantum" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-slate-900 border-slate-700">
+          <TabsTrigger value="quantum" className="flex items-center gap-2 data-[state=active]:bg-blue-600">
+            <Zap className="h-4 w-4" />
+            Quantum Indicators
+          </TabsTrigger>
+          <TabsTrigger value="signals" className="flex items-center gap-2 data-[state=active]:bg-blue-600">
+            <Target className="h-4 w-4" />
+            Trading Signals
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center gap-2 data-[state=active]:bg-blue-600">
+            <BarChart3 className="h-4 w-4" />
+            Market Analysis
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Bullish</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-500">{stats.bullish}</div>
-            <p className="text-xs text-slate-400">Buy signals</p>
-          </CardContent>
-        </Card>
+        <TabsContent value="quantum" className="space-y-6">
+          <div className="grid gap-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Cpu className="h-5 w-5 text-blue-500" />
+                  Quantum Performance Metrics
+                </CardTitle>
+                <p className="text-sm text-slate-400">
+                  High-performance computing metrics for the quantum indicator engine
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-blue-900/50 rounded-lg border border-blue-800">
+                    <div className="text-2xl font-bold text-blue-400">~150ms</div>
+                    <div className="text-sm text-slate-400">Target Latency</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-900/50 rounded-lg border border-green-800">
+                    <div className="text-2xl font-bold text-green-400">&gt;2000</div>
+                    <div className="text-sm text-slate-400">Symbols/sec</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-900/50 rounded-lg border border-purple-800">
+                    <div className="text-2xl font-bold text-purple-400">&gt;10000</div>
+                    <div className="text-sm text-slate-400">Calculations/sec</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-900/50 rounded-lg border border-orange-800">
+                    <div className="text-2xl font-bold text-orange-400">99.9%</div>
+                    <div className="text-sm text-slate-400">Uptime</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Bearish</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-500">{stats.bearish}</div>
-            <p className="text-xs text-slate-400">Sell signals</p>
-          </CardContent>
-        </Card>
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+              <QuantumTechnicalIndicators />
+            </div>
+          </div>
+        </TabsContent>
 
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Strong Signals</CardTitle>
-            <Zap className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-500">{stats.strong}</div>
-            <p className="text-xs text-slate-400">≥75% strength</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Filter className="w-5 h-5 text-blue-500" />
-            Filters
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <TabsContent value="signals" className="space-y-6">
+          {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="text-sm text-slate-300 mb-2 block">Search Symbol</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="BTC, ETH, ADA..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-slate-800 border-slate-700"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-sm text-slate-300 mb-2 block">Signal Type</label>
-              <Select value={signalFilter} onValueChange={(value: any) => setSignalFilter(value)}>
-                <SelectTrigger className="bg-slate-800 border-slate-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Signals</SelectItem>
-                  <SelectItem value="bullish">Bullish Only</SelectItem>
-                  <SelectItem value="bearish">Bearish Only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <label className="text-sm text-slate-300 mb-2 block">Signal Strength</label>
-              <Select value={strengthFilter} onValueChange={(value: any) => setStrengthFilter(value)}>
-                <SelectTrigger className="bg-slate-800 border-slate-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Strengths</SelectItem>
-                  <SelectItem value="high">High (≥75%)</SelectItem>
-                  <SelectItem value="medium">Medium (50-74%)</SelectItem>
-                  <SelectItem value="low">Low (&lt;50%)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex items-end">
-              <Button variant="outline" className="w-full">
-                Clear Filters
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-slate-400">Total Signals</CardTitle>
+                <BarChart3 className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white">{stats.total}</div>
+                <p className="text-xs text-slate-400">Active pairs</p>
+              </CardContent>
+            </Card>
 
-      {/* Signals List */}
-      <Card className="bg-slate-900 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">
-            Signal Analysis ({filteredSignals.length} results)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {filteredSignals.map((signal, index) => (
-              <div
-                key={signal.symbol}
-                className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {index < 3 && (
-                      <Star className={`w-5 h-5 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-slate-400' : 'text-orange-600'}`} />
-                    )}
-                    <div>
-                      <h3 className="font-bold text-white text-lg">{signal.symbol}</h3>
-                      <p className="text-sm text-slate-400">
-                        ${signal.price.toFixed(6)} • {signal.change24h >= 0 ? '+' : ''}{signal.change24h.toFixed(2)}%
-                      </p>
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-slate-400">Bullish</CardTitle>
+                <TrendingUp className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-500">{stats.bullish}</div>
+                <p className="text-xs text-slate-400">Buy signals</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-slate-400">Bearish</CardTitle>
+                <TrendingDown className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-500">{stats.bearish}</div>
+                <p className="text-xs text-slate-400">Sell signals</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-slate-400">Strong Signals</CardTitle>
+                <Zap className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-500">{stats.strong}</div>
+                <p className="text-xs text-slate-400">≥75% strength</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filters */}
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Filter className="w-5 h-5 text-blue-500" />
+                Filters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="text-sm text-slate-300 mb-2 block">Search Symbol</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      placeholder="BTC, ETH, ADA..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-slate-800 border-slate-700"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm text-slate-300 mb-2 block">Signal Type</label>
+                  <Select value={signalFilter} onValueChange={(value: any) => setSignalFilter(value)}>
+                    <SelectTrigger className="bg-slate-800 border-slate-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Signals</SelectItem>
+                      <SelectItem value="bullish">Bullish Only</SelectItem>
+                      <SelectItem value="bearish">Bearish Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="text-sm text-slate-300 mb-2 block">Signal Strength</label>
+                  <Select value={strengthFilter} onValueChange={(value: any) => setStrengthFilter(value)}>
+                    <SelectTrigger className="bg-slate-800 border-slate-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Strengths</SelectItem>
+                      <SelectItem value="high">High (≥75%)</SelectItem>
+                      <SelectItem value="medium">Medium (50-74%)</SelectItem>
+                      <SelectItem value="low">Low (&lt;50%)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-end">
+                  <Button variant="outline" className="w-full">
+                    Clear Filters
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Signals List */}
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white">
+                Signal Analysis ({filteredSignals.length} results)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {filteredSignals.map((signal, index) => (
+                  <div
+                    key={signal.symbol}
+                    className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {index < 3 && (
+                          <Star className={`w-5 h-5 ${index === 0 ? 'text-yellow-500' : index === 1 ? 'text-slate-400' : 'text-orange-600'}`} />
+                        )}
+                        <div>
+                          <h3 className="font-bold text-white text-lg">{signal.symbol}</h3>
+                          <p className="text-sm text-slate-400">
+                            ${signal.price.toFixed(6)} • {signal.change24h >= 0 ? '+' : ''}{signal.change24h.toFixed(2)}%
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <Badge 
+                          variant="outline" 
+                          className={`${getSignalColor(signal.overallSignal)} text-sm`}
+                        >
+                          {getSignalIcon(signal.overallSignal)}
+                          {signal.overallSignal.toUpperCase()}
+                        </Badge>
+                        
+                        <div className="text-right">
+                          <div className={`text-lg font-bold ${getStrengthColor(signal.strength)}`}>
+                            {signal.strength}%
+                          </div>
+                          <div className="text-xs text-slate-400">
+                            {signal.signalCount}/4 signals
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-slate-400">Volume 24h:</span>
+                        <div className="text-white">{formatVolume(signal.volume24h)}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-400">Market Cap:</span>
+                        <div className="text-white">{formatCurrency(signal.marketCap)}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-400">Confidence:</span>
+                        <div className="text-white">{signal.confidence.toFixed(0)}%</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-400">Updated:</span>
+                        <div className="text-white">{signal.lastUpdate}</div>
+                      </div>
+                    </div>
+
+                    {/* Indicator Badges */}
+                    <div className="flex gap-2 mt-3">
+                      <Badge 
+                        variant="outline" 
+                        className={`${getSignalColor(signal.signals.rsi)} text-xs`}
+                        title={`RSI: ${signal.indicators.rsi.toFixed(1)}`}
+                      >
+                        RSI
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getSignalColor(signal.signals.macd)} text-xs`}
+                        title={`MACD: ${signal.indicators.macd.toFixed(4)}`}
+                      >
+                        MACD
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getSignalColor(signal.signals.bollinger)} text-xs`}
+                        title={`BB: ${signal.indicators.bollinger.toFixed(1)}%`}
+                      >
+                        BB
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className={`${getSignalColor(signal.signals.volume)} text-xs`}
+                        title={`Vol: ${signal.indicators.volume.toFixed(2)}x`}
+                      >
+                        VOL
+                      </Badge>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Badge 
-                      variant="outline" 
-                      className={`${getSignalColor(signal.overallSignal)} text-sm`}
-                    >
-                      {getSignalIcon(signal.overallSignal)}
-                      {signal.overallSignal.toUpperCase()}
-                    </Badge>
-                    
-                    <div className="text-right">
-                      <div className={`text-lg font-bold ${getStrengthColor(signal.strength)}`}>
-                        {signal.strength}%
-                      </div>
-                      <div className="text-xs text-slate-400">
-                        {signal.signalCount}/4 signals
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span className="text-slate-400">Volume 24h:</span>
-                    <div className="text-white">{formatVolume(signal.volume24h)}</div>
+                {filteredSignals.length === 0 && !isLoading && (
+                  <div className="text-center text-slate-400 py-12">
+                    <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">No signals match your filters</p>
+                    <p className="text-sm">Try adjusting your search criteria</p>
                   </div>
-                  <div>
-                    <span className="text-slate-400">Market Cap:</span>
-                    <div className="text-white">{formatCurrency(signal.marketCap)}</div>
-                  </div>
-                  <div>
-                    <span className="text-slate-400">Confidence:</span>
-                    <div className="text-white">{signal.confidence.toFixed(0)}%</div>
-                  </div>
-                  <div>
-                    <span className="text-slate-400">Updated:</span>
-                    <div className="text-white">{signal.lastUpdate}</div>
-                  </div>
-                </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-                {/* Indicator Badges */}
-                <div className="flex gap-2 mt-3">
-                  <Badge 
-                    variant="outline" 
-                    className={`${getSignalColor(signal.signals.rsi)} text-xs`}
-                    title={`RSI: ${signal.indicators.rsi.toFixed(1)}`}
-                  >
-                    RSI
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className={`${getSignalColor(signal.signals.macd)} text-xs`}
-                    title={`MACD: ${signal.indicators.macd.toFixed(4)}`}
-                  >
-                    MACD
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className={`${getSignalColor(signal.signals.bollinger)} text-xs`}
-                    title={`BB: ${signal.indicators.bollinger.toFixed(1)}%`}
-                  >
-                    BB
-                  </Badge>
-                  <Badge 
-                    variant="outline" 
-                    className={`${getSignalColor(signal.signals.volume)} text-xs`}
-                    title={`Vol: ${signal.indicators.volume.toFixed(2)}x`}
-                  >
-                    VOL
-                  </Badge>
+        <TabsContent value="analysis" className="space-y-6">
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Gauge className="h-5 w-5 text-purple-500" />
+                Market Analysis Dashboard
+              </CardTitle>
+              <p className="text-sm text-slate-400">
+                Comprehensive market analysis and trend identification
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="p-4 border border-slate-700 rounded-lg bg-slate-800/50">
+                  <h4 className="font-semibold mb-2 text-white">Tier 1: Core Indicators</h4>
+                  <ul className="text-sm text-slate-400 space-y-1">
+                    <li>• RSI Multi-Timeframe (7, 14, 21)</li>
+                    <li>• ATR Percentile Ranking</li>
+                    <li>• VWAP Deviation Analysis</li>
+                    <li>• Price Velocity & Acceleration</li>
+                  </ul>
+                </div>
+                <div className="p-4 border border-slate-700 rounded-lg bg-slate-800/50">
+                  <h4 className="font-semibold mb-2 text-white">Tier 2: Advanced Signals</h4>
+                  <ul className="text-sm text-slate-400 space-y-1">
+                    <li>• Bollinger Band Squeeze</li>
+                    <li>• MACD Histogram Divergence</li>
+                    <li>• Williams %R + Stochastic</li>
+                    <li>• Volume-Weighted Analysis</li>
+                  </ul>
+                </div>
+                <div className="p-4 border border-slate-700 rounded-lg bg-slate-800/50">
+                  <h4 className="font-semibold mb-2 text-white">Tier 3: Microstructure</h4>
+                  <ul className="text-sm text-slate-400 space-y-1">
+                    <li>• Order Flow Imbalance</li>
+                    <li>• Institutional Activity</li>
+                    <li>• Retail vs Smart Money</li>
+                    <li>• Real-time Processing</li>
+                  </ul>
                 </div>
               </div>
-            ))}
-
-            {filteredSignals.length === 0 && !isLoading && (
-              <div className="text-center text-slate-400 py-12">
-                <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No signals match your filters</p>
-                <p className="text-sm">Try adjusting your search criteria</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 } 
