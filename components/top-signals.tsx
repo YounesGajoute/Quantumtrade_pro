@@ -124,7 +124,7 @@ export function TopSignals() {
     
     const interval = setInterval(() => {
       fetchMarketData()
-    }, 120000) // Update every 2 minutes
+    }, 30000) // Update every 30 seconds instead of 2 minutes
 
     return () => clearInterval(interval)
   }, [])

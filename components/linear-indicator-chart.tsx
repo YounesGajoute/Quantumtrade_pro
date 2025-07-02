@@ -95,7 +95,13 @@ export function LinearIndicatorChart({ title, type, description }: LinearIndicat
               signal = value > 0.05 ? "bullish" : value < -0.05 ? "bearish" : "neutral"
               break
             case "bollinger":
-              value = item.indicators?.bollinger?.position || 50
+              // Handle both string and number position values
+              const bollingerPos = item.indicators?.bollinger?.position
+              if (typeof bollingerPos === 'string') {
+                value = bollingerPos === 'UPPER' ? 85 : bollingerPos === 'LOWER' ? 15 : 50
+              } else {
+                value = bollingerPos || 50
+              }
               signal = value > 75 ? "bearish" : value < 25 ? "bullish" : "neutral"
               break
             case "volume":
@@ -145,7 +151,7 @@ export function LinearIndicatorChart({ title, type, description }: LinearIndicat
     
     const interval = setInterval(() => {
       fetchMarketData()
-    }, 60000) // Update every minute
+    }, 30000) // Update every 30 seconds
 
     return () => clearInterval(interval)
   }, [type])
