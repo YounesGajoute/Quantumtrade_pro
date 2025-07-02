@@ -120,7 +120,7 @@ jobs:
         CI: true
 
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       if: success()
       with:
         file: ./coverage/lcov.info
